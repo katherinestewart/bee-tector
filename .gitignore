@@ -2,3 +2,4 @@ raw_data/
 notebooks/
 .python-version
 .DS_Store
+.vscode
