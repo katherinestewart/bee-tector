@@ -6,9 +6,12 @@ This module provides functions to load Bombus image datasets into TensorFlow
 
 Functions
 ---------
-load_datasets(data_dir=FULL_DATA_DIR)
-    Loads train, validation, and test datasets from a directory containing
-    'train', 'val', and 'test' subfolders.
+load_datasets()
+    Loads train, val and test datasets
+load_selected_classes()
+    Loads train, val and test datasets for selected classes
+undersample_datasets()
+    Creates a balanced train set by undersampling
 """
 
 import os
