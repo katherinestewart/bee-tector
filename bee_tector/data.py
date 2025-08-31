@@ -2,7 +2,7 @@
 Dataset loading utilities for BeeTector.
 
 This module provides functions to load Bombus image datasets into TensorFlow
-`tf.data.Dataset` objects, ready for training, validation and testing.
+tf.data.Dataset objects, ready for training, validation and testing.
 
 Functions
 ---------
