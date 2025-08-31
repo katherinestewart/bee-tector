@@ -27,7 +27,7 @@ def load_datasets(data_dir=FULL_DATA_DIR):
     Parameters
     ----------
     data_dir : str, optional
-        Path to the dataset root directory. Defaults to `FULL_DATA_DIR`.
+        Path to the dataset root directory. Defaults to FULL_DATA_DIR
 
     Returns
     -------
