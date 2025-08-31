@@ -4,6 +4,7 @@ A deep model for Bombus subspecies detection
 
 ## Project Structure
 
+```bash
 ├── bee_tector
 │   ├── __init__.py
 │   ├── config.py
