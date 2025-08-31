@@ -122,10 +122,39 @@ def undersample_dataset(data_dir=FULL_DATA_DIR,
                     seed=SEED,
                     class_names=None):
     """
-    Return a balanced training dataset by undersampling to the smallest class.
-    If class_names is given, only those classes are included.
+    Create a balanced training dataset by undersampling.
 
-    Also returns a mapping {label_id: class_name}.
+    This function scans the train folder of the dataset and collects file paths
+    for each class. It undersamples all classes down to the size of the smallest
+    class, so that the resulting dataset is balanced.
+
+    Parameters
+    ----------
+    data_dir : str or Path, optional
+        Root dataset directory containing subfolders train, val, test
+    image_size : tuple of int, optional
+        Target size for image resizing (height, width). Defaults to IMAGE_SIZE
+    batch_size : int, optional
+        Number of samples per batch. Defaults to BATCH_SIZE
+    seed : int, optional
+        Random seed for shuffling and sampling. Defaults to SEED
+    class_names : list of str, optional
+        Subset of class folder names to include.
+        **If None all classes in train are used**
+
+    Returns
+    -------
+    ds : tf.data.Dataset
+        A balanced training dataset, batched and prefetched.
+    id_to_class : dict of {int: str}
+        Dictionary of numeric label IDs to class folder names.
+
+    Notes
+    -----
+    - Classes with more images will be downsized to match the smallest class.
+    - Only the training set is balanced. Val and test sets untouched
+    - Labels are integer-encoded in the order of the provided class_names
+      or if class_names=None alphabetically sorted folder names.
     """
     train_dir = os.path.join(data_dir, "train")
     all_classes = sorted(os.listdir(train_dir))
