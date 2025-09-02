@@ -2,11 +2,11 @@ from fastapi import FastAPI, UploadFile, File
 import shutil
 from fastapi.middleware.cors import CORSMiddleware
 
-import predict
+# import predict
 
 app = FastAPI()
 
-app.state.model = load_model()
+# app.state.model = load_model()
 
 # Allowing all middleware is optional, but good practice for dev purposes
 app.add_middleware(
