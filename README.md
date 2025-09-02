@@ -24,6 +24,7 @@ A deep model for Bombus subspecies detection
 │   ├── baseline.ipynb
 │   ├── katherine_notebook.ipynb
 │   ├── Lele_notebook.ipynb
+│   ├── lele_transfer_learning.ipynb
 │   └── thahyra_notebook.ipynb
 ├── raw_data
 │   ├── bombus11_curated
