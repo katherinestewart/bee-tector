@@ -27,7 +27,7 @@ def create_upload_file(img: UploadFile = File(...)):
         
     with open(file_path, "wb") as test_img:
         # saving img to file test_img
-        shutil.copyfileobj(image.file, test_img)
+        shutil.copyfileobj(img.file, test_img)
             
     return {"filename": img.filename, "message": "Image uploaded successfully!"}
     
