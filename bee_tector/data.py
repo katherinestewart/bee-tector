@@ -160,7 +160,10 @@ def undersample_dataset(data_dir=FULL_DATA_DIR,
       or if class_names=None alphabetically sorted folder names.
     """
     train_dir = os.path.join(data_dir, "train")
-    all_classes = sorted(os.listdir(train_dir))
+    all_classes = sorted([
+        d for d in os.listdir(train_dir)
+        if os.path.isdir(os.path.join(train_dir, d))
+    ])
     classes = class_names or all_classes
 
     # collect files per class
