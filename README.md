@@ -20,12 +20,10 @@ A deep model for Bombus subspecies detection
 │   ├── baseline_model.keras
 │   └── seven_bees_baseline.keras
 ├── notebooks
-│   ├── baseline_7CVH.ipynb
 │   ├── baseline_roninrp_0.ipynb
 │   ├── baseline.ipynb
 │   ├── katherine_notebook.ipynb
 │   ├── Lele_notebook.ipynb
-│   ├── roninrp_0.ipynb
 │   └── thahyra_notebook.ipynb
 ├── raw_data
 │   ├── bombus11_curated
