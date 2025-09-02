@@ -5,7 +5,7 @@ with open("requirements.txt") as f:
 requirements = [x.strip() for x in content if "git+" not in x]
 
 setup(
-    name="BeeTector",
+    name="bee_tector",
     version="0.1.0",
     description="BeeTector ML model and API",
     license="MIT",
