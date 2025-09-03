@@ -9,7 +9,7 @@ COPY requirements.txt requirements.txt
 # CMD uvicorn bee_tector.api.fast:app --host 0.0.0.0 --port $PORT
 
 RUN pip install --no-cache-dir --upgrade pip
-
+RUN pip install -e .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy BeeTector package
