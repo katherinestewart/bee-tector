@@ -1,5 +1,15 @@
-tensorflow>=2.20
+tensorflow==2.16.2
 matplotlib>=3.10.6
+# githubusers
+pytest
+pylint
+ipdb
+jupyterlab
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
 
 # API
 fastapi==0.108.0
