@@ -13,5 +13,5 @@ BEES_COUNTRIES_CSV = PROJECT_ROOT / "raw_data" / "bees_with_countries.csv"
 
 # Parameters
 IMAGE_SIZE = (299, 299)
-BATCH_SIZE = 32  # Adjust based on your memory capacity
+BATCH_SIZE = 16  # Adjust based on your memory capacity
 SEED = 42
