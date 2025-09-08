@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bee_tector.data &mdash; Bee-tector 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Bee-tector
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Bee-tector</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">bee_tector.data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for bee_tector.data</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Dataset loading utilities for BeeTector.</span>
+
+<span class="sd">This module provides functions to load Bombus image datasets into TensorFlow</span>
+<span class="sd">tf.data.Dataset objects, ready for training, validation and testing.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">load_datasets()</span>
+<span class="sd">    Loads train, val and test datasets</span>
+<span class="sd">load_selected_classes()</span>
+<span class="sd">    Loads train, val and test datasets for selected classes</span>
+<span class="sd">undersample_datasets()</span>
+<span class="sd">    Creates a balanced train set by undersampling</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">image_dataset_from_directory</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bee_tector.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">FULL_DATA_DIR</span><span class="p">,</span> <span class="n">IMAGE_SIZE</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">,</span> <span class="n">SEED</span>
+
+
+<div class="viewcode-block" id="load_datasets">
+<a class="viewcode-back" href="../../bee_tector.html#bee_tector.data.load_datasets">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_datasets</span><span class="p">(</span><span class="n">data_dir</span><span class="o">=</span><span class="n">FULL_DATA_DIR</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load train, validation, and test datasets from a directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_dir : str, optional</span>
+<span class="sd">        Path to the dataset root directory. Defaults to FULL_DATA_DIR</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    train_ds : tf.data.Dataset</span>
+<span class="sd">        Training dataset</span>
+<span class="sd">    val_ds : tf.data.Dataset</span>
+<span class="sd">        Validation dataset</span>
+<span class="sd">    test_ds : tf.data.Dataset</span>
+<span class="sd">        Test dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">train_ds</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;train&#39;</span><span class="p">),</span>
+        <span class="n">image_size</span><span class="o">=</span><span class="n">IMAGE_SIZE</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">SEED</span>
+    <span class="p">)</span>
+
+    <span class="n">val_ds</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;val&#39;</span><span class="p">),</span>
+        <span class="n">image_size</span><span class="o">=</span><span class="n">IMAGE_SIZE</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">SEED</span>
+    <span class="p">)</span>
+
+    <span class="n">test_ds</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">),</span>
+        <span class="n">image_size</span><span class="o">=</span><span class="n">IMAGE_SIZE</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">train_ds</span><span class="p">,</span> <span class="n">val_ds</span><span class="p">,</span> <span class="n">test_ds</span></div>
+
+
+
+<div class="viewcode-block" id="load_selected_classes">
+<a class="viewcode-back" href="../../bee_tector.html#bee_tector.data.load_selected_classes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_selected_classes</span><span class="p">(</span><span class="n">data_dir</span><span class="o">=</span><span class="n">FULL_DATA_DIR</span><span class="p">,</span>
+                          <span class="n">wanted_classes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">image_size</span><span class="o">=</span><span class="n">IMAGE_SIZE</span><span class="p">,</span>
+                          <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span>
+                          <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load train/val/test datasets with the specified classes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_dir : str</span>
+<span class="sd">        Root dataset directory</span>
+<span class="sd">    wanted_classes : list[str]</span>
+<span class="sd">        List of class folder names to include.</span>
+<span class="sd">    image_size : tuple[int,int]</span>
+<span class="sd">        Target image size for resizing.</span>
+<span class="sd">    batch_size : int</span>
+<span class="sd">        Batch size for datasets.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    train_ds, val_ds, test_ds : tf.data.Dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">train_ds</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span><span class="p">),</span>
+        <span class="n">image_size</span><span class="o">=</span><span class="n">image_size</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">class_names</span><span class="o">=</span><span class="n">wanted_classes</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">SEED</span>
+    <span class="p">)</span>
+
+    <span class="n">val_ds</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">),</span>
+        <span class="n">image_size</span><span class="o">=</span><span class="n">image_size</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">class_names</span><span class="o">=</span><span class="n">wanted_classes</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">SEED</span>
+    <span class="p">)</span>
+
+    <span class="n">test_ds</span> <span class="o">=</span> <span class="n">image_dataset_from_directory</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">),</span>
+        <span class="n">image_size</span><span class="o">=</span><span class="n">image_size</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">class_names</span><span class="o">=</span><span class="n">wanted_classes</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">train_ds</span><span class="p">,</span> <span class="n">val_ds</span><span class="p">,</span> <span class="n">test_ds</span></div>
+
+
+
+<div class="viewcode-block" id="undersample_dataset">
+<a class="viewcode-back" href="../../bee_tector.html#bee_tector.data.undersample_dataset">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">undersample_dataset</span><span class="p">(</span><span class="n">data_dir</span><span class="o">=</span><span class="n">FULL_DATA_DIR</span><span class="p">,</span>
+                    <span class="n">image_size</span><span class="o">=</span><span class="n">IMAGE_SIZE</span><span class="p">,</span>
+                    <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span>
+                    <span class="n">seed</span><span class="o">=</span><span class="n">SEED</span><span class="p">,</span>
+                    <span class="n">class_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a balanced training dataset by undersampling.</span>
+
+<span class="sd">    This function scans the train folder of the dataset and collects file paths</span>
+<span class="sd">    for each class. It undersamples all classes down to the size of the smallest</span>
+<span class="sd">    class, so that the resulting dataset is balanced.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_dir : str or Path, optional</span>
+<span class="sd">        Root dataset directory containing subfolders train, val, test</span>
+<span class="sd">    image_size : tuple of int, optional</span>
+<span class="sd">        Target size for image resizing (height, width). Defaults to IMAGE_SIZE</span>
+<span class="sd">    batch_size : int, optional</span>
+<span class="sd">        Number of samples per batch. Defaults to BATCH_SIZE</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        Random seed for shuffling and sampling. Defaults to SEED</span>
+<span class="sd">    class_names : list of str, optional</span>
+<span class="sd">        Subset of class folder names to include.</span>
+<span class="sd">        **If None all classes in train are used**</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ds : tf.data.Dataset</span>
+<span class="sd">        A balanced training dataset, batched and prefetched.</span>
+<span class="sd">    id_to_class : dict of {int: str}</span>
+<span class="sd">        Dictionary of numeric label IDs to class folder names.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Classes with more images will be downsized to match the smallest class.</span>
+<span class="sd">    - Only the training set is balanced. Val and test sets untouched</span>
+<span class="sd">    - Labels are integer-encoded in the order of the provided class_names</span>
+<span class="sd">      or if class_names=None alphabetically sorted folder names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">train_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span><span class="p">)</span>
+    <span class="n">all_classes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span>
+        <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">train_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">train_dir</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+    <span class="p">])</span>
+    <span class="n">classes</span> <span class="o">=</span> <span class="n">class_names</span> <span class="ow">or</span> <span class="n">all_classes</span>
+
+    <span class="c1"># collect files per class</span>
+    <span class="n">files_per_class</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">classes</span><span class="p">):</span>
+        <span class="n">class_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">train_dir</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">class_path</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">class_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.jpg&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">files_per_class</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">files</span><span class="p">))</span>
+
+    <span class="c1"># find smallest class size</span>
+    <span class="n">min_count</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files_per_class</span><span class="p">)</span>
+
+    <span class="c1"># undersample each class</span>
+    <span class="n">paths</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">files_per_class</span><span class="p">:</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">min_count</span><span class="p">)</span>
+        <span class="n">paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">label</span><span class="p">]</span> <span class="o">*</span> <span class="n">min_count</span><span class="p">)</span>
+
+    <span class="c1"># build dataset</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">((</span><span class="n">paths</span><span class="p">,</span> <span class="n">labels</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">decode_jpeg</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">image_size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">label</span>
+
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">preprocess</span><span class="p">,</span> <span class="n">num_parallel_calls</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AUTOTUNE</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">prefetch</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AUTOTUNE</span><span class="p">)</span>
+
+    <span class="n">id_to_class</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">cname</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">cname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">classes</span><span class="p">)}</span>
+
+    <span class="k">return</span> <span class="n">ds</span><span class="p">,</span> <span class="n">id_to_class</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bee-tectives.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,185 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api package &mdash; Bee-tector 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bee-tector
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">api package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-api.fast">api.fast module</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#api.fast.create_upload_file"><code class="docutils literal notranslate"><span class="pre">create_upload_file()</span></code></a></li>
+<li><a class="reference internal" href="#api.fast.get_predict"><code class="docutils literal notranslate"><span class="pre">get_predict()</span></code></a></li>
+<li><a class="reference internal" href="#api.fast.root"><code class="docutils literal notranslate"><span class="pre">root()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.main">api.main module</a></li>
+<li><a class="reference internal" href="#module-api.predict">api.predict module</a><ul>
+<li><a class="reference internal" href="#api.predict.load_best_model"><code class="docutils literal notranslate"><span class="pre">load_best_model()</span></code></a></li>
+<li><a class="reference internal" href="#api.predict.predict"><code class="docutils literal notranslate"><span class="pre">predict()</span></code></a></li>
+<li><a class="reference internal" href="#api.predict.preprocess_image"><code class="docutils literal notranslate"><span class="pre">preprocess_image()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bee-tector</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">api package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-package">
+<h1>api package<a class="headerlink" href="#api-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-api.fast">
+<span id="api-fast-module"></span><h2>api.fast module<a class="headerlink" href="#module-api.fast" title="Link to this heading"></a></h2>
+<p>FastApi configuration for BeeTector.</p>
+<p>This module provides functions for FastApi to accept user inputs of images.</p>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>create_upload_file(file: UploadFile = File(…))</dt><dd><p>Accepts an image into the variable file: UploadFile = File(…) an stores it locally.
+It has the endpoint /upload_image/.</p>
+</dd>
+<dt>get_predict(img_path)</dt><dd><p>Gets model predcition on the image stored in img_path.</p>
+</dd>
+</dl>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.fast.create_upload_file">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.fast.</span></span><span class="sig-name descname"><span class="pre">create_upload_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UploadFile</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">File(PydanticUndefined)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/fast.html#create_upload_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.fast.create_upload_file" title="Link to this definition"></a></dt>
+<dd><p>This endpoint accepts an image file upload.
+It saves the uploaded image to a local file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.fast.get_predict">
+<span class="sig-prename descclassname"><span class="pre">api.fast.</span></span><span class="sig-name descname"><span class="pre">get_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/fast.html#get_predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.fast.get_predict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.fast.root">
+<span class="sig-prename descclassname"><span class="pre">api.fast.</span></span><span class="sig-name descname"><span class="pre">root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/fast.html#root"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.fast.root" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-api.main">
+<span id="api-main-module"></span><h2>api.main module<a class="headerlink" href="#module-api.main" title="Link to this heading"></a></h2>
+</section>
+<section id="module-api.predict">
+<span id="api-predict-module"></span><h2>api.predict module<a class="headerlink" href="#module-api.predict" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.predict.load_best_model">
+<span class="sig-prename descclassname"><span class="pre">api.predict.</span></span><span class="sig-name descname"><span class="pre">load_best_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/predict.html#load_best_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.predict.load_best_model" title="Link to this definition"></a></dt>
+<dd><p>Load best model for prediction.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.predict.predict">
+<span class="sig-prename descclassname"><span class="pre">api.predict.</span></span><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">best_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/predict.html#predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.predict.predict" title="Link to this definition"></a></dt>
+<dd><p>Make prediction with best model from preprocessed user image.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.predict.preprocess_image">
+<span class="sig-prename descclassname"><span class="pre">api.predict.</span></span><span class="sig-name descname"><span class="pre">preprocess_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/home/glaznos/code/katherinestewart/bee-tector/raw_data/bombus12_full/test/Red-tailed_Bumble_bee/535031756.jpg'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/api/predict.html#preprocess_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.predict.preprocess_image" title="Link to this definition"></a></dt>
+<dd><p>Load and preprocess image for prediction.</p>
+</dd></dl>
+
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>todo 1</p>
+<p>todo 2</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bee-tectives.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
