@@ -6,6 +6,7 @@ from tensorflow.keras.utils import load_img, img_to_array
 
 from bee_tector.config import (
     BEST_MODEL_PATH,
+    FIRST_MODEL_PATH,
     FULL_DATA_DIR,
     IMAGE_SIZE,
     )
@@ -32,6 +33,14 @@ def load_best_model():
     return model
 
 
+def load_first_layer_model():
+    """
+    Load best model for prediction.
+    """
+    model = load_model(FIRST_MODEL_PATH)
+    return model
+
+
 def predict(best_model, img_array):
     """
     Make prediction with best model from preprocessed user image.
@@ -49,6 +58,24 @@ def predict(best_model, img_array):
         9: 'Two-spotted_Bumble_Bee',
         10: 'White-tailed_Bumble_Bee',
         11: 'Yellow-faced_Bumble_Bee'
+    }
+
+    preds = best_model.predict(img_array)
+    pred_index = np.argmax(preds, axis=1)[0]
+    pred_class = id_to_class[pred_index]
+    confidence = round(float(preds[0][pred_index]) * 100, 2)
+
+    return {"class": pred_class, "confidence": f"{confidence}%"}
+
+
+def predict_first_layer(best_model, img_array):
+    """
+    Make prediction with best model from preprocessed user image.
+    """
+    id_to_class = {
+        0: 'bumble_bees',
+        1: 'lookalikes',
+        2: 'others'
     }
 
     preds = best_model.predict(img_array)
