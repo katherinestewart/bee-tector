@@ -5,16 +5,16 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import load_img, img_to_array
 
 from bee_tector.config import (
-    BEST_MODEL_PATH,
-    FIRST_MODEL_PATH,
-    FULL_DATA_DIR,
+    SUBSPECIES_MODEL_PATH,
+    DETECTOR_MODEL_PATH,
+    SUBSPECIES_DATA_DIR,
     IMAGE_SIZE,
     )
 
 
 def preprocess_image(
         img_path=os.path.join(
-        FULL_DATA_DIR, "test", "Red-tailed_Bumble_bee", "535031756.jpg"
+        SUBSPECIES_DATA_DIR, "test", "Red-tailed_Bumble_bee", "535031756.jpg"
     )):
     """
     Load and preprocess image for prediction.
@@ -29,7 +29,7 @@ def load_best_model():
     """
     Load best model for prediction.
     """
-    model = load_model(BEST_MODEL_PATH)
+    model = load_model(SUBSPECIES_MODEL_PATH)
     return model
 
 
@@ -37,7 +37,7 @@ def load_first_layer_model():
     """
     Load best model for prediction.
     """
-    model = load_model(FIRST_MODEL_PATH)
+    model = load_model(DETECTOR_MODEL_PATH)
     return model
 
 
