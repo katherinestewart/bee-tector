@@ -46,6 +46,7 @@ def load_datasets(data_dir=FULL_DATA_DIR):
         image_size=IMAGE_SIZE,
         batch_size=BATCH_SIZE,
         shuffle=True,
+        color_mode='rgb',
         seed=SEED
     )
 
@@ -53,6 +54,7 @@ def load_datasets(data_dir=FULL_DATA_DIR):
         os.path.join(data_dir, 'val'),
         image_size=IMAGE_SIZE,
         batch_size=BATCH_SIZE,
+        color_mode='rgb',
         shuffle=True,
         seed=SEED
     )
@@ -61,6 +63,7 @@ def load_datasets(data_dir=FULL_DATA_DIR):
         os.path.join(data_dir, 'test'),
         image_size=IMAGE_SIZE,
         batch_size=BATCH_SIZE,
+        color_mode='rgb',
         shuffle=False
     )
 
