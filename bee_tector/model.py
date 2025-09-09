@@ -1,23 +1,14 @@
 import numpy as np
-import time
-
-from colorama import Fore, Style
-
-# Timing the TF import
-print(Fore.BLUE + "\nLoading TensorFlow..." + Style.RESET_ALL)
-start = time.perf_counter()
 
 from tensorflow import keras
-from keras import Sequential, Input, layers
-from keras.callbacks import EarlyStopping
-from keras.optimizers import Adam
-from keras import regularizers
+from keras import Sequential, layers
+from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.optimizers import SGD
 from keras.models import load_model
+from keras.applications import InceptionV3
+from keras.optimizers.schedules import PiecewiseConstantDecay
 
 from bee_tector.config import IMAGE_SIZE, MODELS_DIR
-
-end = time.perf_counter()
-print(f"\n✅ TensorFlow loaded ({round(end - start, 2)}s)")
 
 
 
@@ -38,33 +29,29 @@ def initialize_model(shape=IMAGE_SIZE + (3,), num_classes=12):
     keras.Model
         Uncompiled Keras Sequential model with Rescaling.
     """
+    aug = Sequential([
+        layers.RandomFlip("horizontal"),
+        layers.RandomRotation(100/360),
+        layers.RandomZoom(0.1),
+        layers.RandomShear(x_factor=[0.0, 0.3], y_factor=[0.0, 0.0]),
+    ], name="augment")
 
-    model = Sequential()
+    inc = InceptionV3(
+        include_top=False,
+        input_shape=shape,
+        weights='imagenet'
+    )
+    inc.trainable = True
 
-    model.add(Input(shape=shape))
-    model.add(layers.Rescaling(1./255))  # RESCALE!
-
-    model.add(layers.Conv2D(32, (4, 4), padding='same', activation='relu'))
-    model.add(layers.BatchNormalization())
-    model.add(layers.MaxPool2D(pool_size=(2,2)))
-
-    model.add(layers.Conv2D(128, (3, 3), padding='same', activation='relu'))
-    model.add(layers.BatchNormalization())
-    model.add(layers.MaxPool2D(pool_size=(2, 2)))
-
-    model.add(layers.Conv2D(256, (3, 3), padding='same', activation='relu'))
-    model.add(layers.BatchNormalization())
-    model.add(layers.MaxPool2D(pool_size=(2, 2)))
-
-    model.add(layers.Flatten())
-
-    reg = regularizers.l2(1e-5)
-    model.add(layers.Dense(128, activation='relu', kernel_regularizer=reg))
-    model.add(layers.Dropout(0.2))
-    model.add(layers.Dense(32, activation='relu', kernel_regularizer=reg))
-    model.add(layers.Dropout(0.2))
-
-    model.add(layers.Dense(num_classes, activation='softmax'))
+    model = Sequential([
+        layers.Input(shape=shape),
+        aug,
+        layers.Rescaling(1./127.5, offset=-1.0),
+        inc,
+        layers.GlobalAveragePooling2D(),
+        layers.Dropout(0.3),
+        layers.Dense(num_classes, activation='softmax')
+    ])
 
     print("✅ Model initialized")
     model.summary()
@@ -72,7 +59,7 @@ def initialize_model(shape=IMAGE_SIZE + (3,), num_classes=12):
     return model
 
 
-def compile_model(model, learning_rate=1e-4):
+def compile_model(model, train_ds):
     """
     Compile the Neural Network
 
@@ -88,9 +75,15 @@ def compile_model(model, learning_rate=1e-4):
     keras.Model
         Compiled model.
     """
+    steps = len(train_ds)
+
+    schedule = PiecewiseConstantDecay(
+        boundaries=[10*steps, 20*steps, 30*steps, 40*steps],
+        values=[3e-3, 1e-3, 3e-4, 1e-4, 3e-5]
+    )
     model.compile(
         loss='sparse_categorical_crossentropy',
-        optimizer=Adam(learning_rate=learning_rate),
+        optimizer=SGD(learning_rate=schedule, momentum=0.9, nesterov=True),
         metrics=['accuracy']
     )
 
@@ -101,10 +94,11 @@ def compile_model(model, learning_rate=1e-4):
 
 def train_model(
         model,
+        chkpt_model_name,
         train_ds,
         val_ds,
-        patience=10,
-        epochs=1000
+        patience=12,
+        epochs=150
     ):
     """
     Train a compiled Keras model.
@@ -129,24 +123,35 @@ def train_model(
     history : keras.callbacks.History
         Training history object with loss/accuracy curves.
     """
-    print(Fore.BLUE + "\nTraining model..." + Style.RESET_ALL)
+
+
+    ckpt = ModelCheckpoint(
+        filepath=f"{MODELS_DIR}/{chkpt_model_name}.keras",
+        monitor="val_loss",
+        mode="min",
+        save_best_only=True,
+        verbose=1
+    )
 
     es = EarlyStopping(
-        monitor='val_loss',
+        monitor="val_loss",
+        mode="min",
         patience=patience,
-        restore_best_weights=True
+        start_from_epoch=15,
+        min_delta=1e-3,
+        restore_best_weights=True,
     )
+
 
     history = model.fit(
         train_ds,
         epochs=epochs,
         validation_data=val_ds,
-        callbacks=[es],
+        callbacks=[ckpt, es],
         verbose=1
     )
 
-    best_val_acc = np.max(history.history['val_accuracy'])
-    print(f"✅ Model trained with best val accuracy: {best_val_acc:.3f}")
+    print("✅ Model trained")
 
     return model, history
 
@@ -176,15 +181,14 @@ def evaluate_model(
         Dictionary of test loss and metrics.
     """
 
-    val_metrics  = model.evaluate(val_ds, verbose=0, return_dict=True)
-    test_metrics = model.evaluate(test_ds, verbose=0, return_dict=True)
+    val_loss, val_acc = model.evaluate(val_ds)
+    test_loss, test_acc = model.evaluate(test_ds)
+    print(f"Validation loss: {val_loss:.4f}, Validation accuracy: {val_acc:.4f}")
+    print(f"Test loss: {test_loss:.4f}, Test accuracy: {test_acc:.4f}")
 
-    print(f"Val  — {val_metrics}")
-    print(f"Test — {test_metrics}")
+    print("✅ Model evaluated")
 
-    print(f"✅ Model evaluated")
-
-    return val_metrics, test_metrics
+    return val_loss, val_acc, test_loss, test_acc
 
 
 def load_trained_model(model_name="baseline_model"):
@@ -203,7 +207,7 @@ def load_trained_model(model_name="baseline_model"):
     """
     path = MODELS_DIR / f"{model_name}.keras"
     model = load_model(path)
-    print(f"✅ Model loaded")
+    print("✅ Model loaded")
     return model
 
 
@@ -219,4 +223,4 @@ def save_model(model, model_name):
         File name (without extension).
     """
     model.save(f"{MODELS_DIR}/{model_name}.keras")
-    print(f"✅ Model saved")
+    print("✅ Model saved")
