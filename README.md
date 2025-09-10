@@ -78,7 +78,6 @@ The `raw_data` (not included in repo) contains a CSV with the data on where and 
 
 
 ## Results
-## Results
 
 Our best results were achieved using **SGD with learning rate scheduling** (dropping the LR every 10 epochs), inspired by this [paper](https://www.nature.com/articles/s41598-021-87210-1) in Scientific Reports.
 
