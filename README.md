@@ -86,7 +86,8 @@ Our best results were achieved using **SGD with learning rate scheduling** (drop
 - **12-class model (InceptionV3)**: 81% accuracy (vs 26% baseline CNN)
 
 Training curves below show the convergence behaviour:
-![Training curves](raw_data/learning_curves.png)
+![Training curves](docs/learning_curves.png)
+
 Detailed results are shown in the [Models](#models) section.
 
 ## Team
