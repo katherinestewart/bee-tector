@@ -40,3 +40,6 @@ models/
 .credentials
 secrets.toml
 *.json
+
+# Experiment notebooks
+notebooks/
