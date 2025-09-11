@@ -16,7 +16,7 @@ track both their location and prevalence.
 
 ## Demo
 
-[Streamlit demo](https://beetector.streamlit.app/)
+[Streamlit demo](https://bee-tector.streamlit.app/)
 
 
 ## Project Structure
@@ -29,7 +29,6 @@ track both their location and prevalence.
 ├── docs
 ├── Makefile
 ├── models
-├── notebooks
 ├── raw_data
 ├── README.md
 ├── requirements.txt
@@ -93,5 +92,5 @@ Detailed results are shown in the [Models](#models) section.
 
 - [Katherine Stewart](https://www.linkedin.com/in/katherine-stewart-a3933b354/)
 - [Emanuele Torrisi](https://www.linkedin.com/in/emanuele-torrisi-08a3572a4/)
-- [Rohan Raghava Poojary]()
+- [Rohan Raghava Poojary](https://www.linkedin.com/in/rohan-r-poojary-b09a25251/)
 - [Thahyra van Heyningen](https://www.linkedin.com/in/thahyravh/)
